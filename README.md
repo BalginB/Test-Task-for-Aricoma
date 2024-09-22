@@ -35,7 +35,7 @@ The program includes the following predefined folder templates:
 
 1. **Clone the repository**:
     ```bash
-    git clone https://github.com/yourusername/greentech-folder-automation.git
+    git clone https://github.com/BalginB/Test-Task-for-Aricoma
     ```
 
 2. **Navigate to the project directory**:
