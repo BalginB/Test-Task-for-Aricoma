@@ -23,10 +23,13 @@ The program includes the following predefined folder templates:
 - **Advanced**: `Data`, `Code`, `Analysis`
 - **Custom**: You can modify this template with your own folder names.
 
-## Requirements
+## Resources
 
-- **.NET Core 3.1** or higher.
-- Access to the console/terminal on your system.
+- Stackoverflow to fix bugs.
+- ChatGPT to quickly find information and help with code.
+- My personal notes in OneNote as a primary source
+- My course PRO C#. For advanced as the main source of knowledge.
+- Video of a random Indian man on YouTube for console design.
 
 ## Installation
 
