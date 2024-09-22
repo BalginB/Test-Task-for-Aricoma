@@ -38,17 +38,12 @@ The program includes the following predefined folder templates:
     git clone https://github.com/BalginB/Test-Task-for-Aricoma
     ```
 
-2. **Navigate to the project directory**:
-    ```bash
-    cd greentech-folder-automation
-    ```
-
-3. **Build the project**:
+2. **Build the project**:
     ```bash
     dotnet build
     ```
 
-4. **Run the project**:
+3. **Run the project**:
     ```bash
     dotnet run
     ```
