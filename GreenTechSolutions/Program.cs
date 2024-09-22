@@ -35,7 +35,7 @@ namespace GreenTechFolderAutomation
         }
 
 
-
+        // Ensures user input is within a valid integer range
         static int GetValidatedInput(int max)
         {
             while (true)
@@ -54,6 +54,7 @@ namespace GreenTechFolderAutomation
         }
 
 
+        // Ensures non-empty string input from the user
         static string GetValidatedStringInput()
         {
             while (true)
@@ -72,27 +73,25 @@ namespace GreenTechFolderAutomation
         }
 
 
-
+        // Allows the user to select a drive for folder navigation and project creation
         static string SelectDrive()
         {
+            // Get a list of all available drives
             DriveInfo[] drives = DriveInfo.GetDrives();
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("Select a drive:");
             Console.ResetColor();
-
+            // Display all drives
             for (int i = 0; i < drives.Length; i++)
             {
                 Console.WriteLine($"{i + 1}. {drives[i].Name}");
             }
-
+            // Get validated drive selection from user
             Func<int, int> driveIndex = GetValidatedInput;
             return drives[driveIndex(drives.Length) - 1].Name;
-
-
-
         }
 
-
+        // Manages folder navigation and project creation
         static void FolderNavigation(string currentPath)
         {
 
@@ -112,7 +111,7 @@ namespace GreenTechFolderAutomation
 
 
                 Func<int, int> choiceIndex = GetValidatedInput;
-
+                // Handle user menu selection
                 switch (choiceIndex(5))
                 {
                     case 1:
@@ -122,7 +121,7 @@ namespace GreenTechFolderAutomation
                         NavigateToSubfolder(currentPath);
                         break;
                     case 3:
-                        // Check if currentPath is root
+                        // Navigate back to the parent folder, ensuring we're not at the root
                         if (currentPath == Path.GetPathRoot(currentPath))
                         {
                             Console.WriteLine("You are already in the main (parent) folder.");
@@ -143,7 +142,7 @@ namespace GreenTechFolderAutomation
                 }
             }
         }
-
+        // Allows the user to navigate to a subfolder within the current directory
         static void NavigateToSubfolder(string currentPath)
         {
             string[] subfolders = Directory.GetDirectories(currentPath);
@@ -156,12 +155,14 @@ namespace GreenTechFolderAutomation
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("Select a subfolder by number:");
             Console.ResetColor();
+
+            // List all available subfolders
             for (int i = 0; i < subfolders.Length; i++)
             {
                 Console.WriteLine($"{i + 1}. {Path.GetFileName(subfolders[i])}");
             }
 
-
+            // Handle subfolder selection
             Func<int, int> subfolderChoice = GetValidatedInput;
             int choice = subfolderChoice(subfolders.Length) - 1;
             if (choice >= 0 && choice < subfolders.Length)
@@ -175,19 +176,23 @@ namespace GreenTechFolderAutomation
             }
         }
 
+        // Handles the process of creating a new project, including folder setup
         static void CreateProject(string currentPath)
         {
             Console.WriteLine("Enter project name:");
             Func<string> projectName = GetValidatedStringInput;
 
+            // Combine current path with project name to form project directory
             string projectPath = Path.Combine(currentPath, projectName());
 
+            // Check if the project directory already exists
             if (Directory.Exists(projectPath))
             {
                 Console.WriteLine("Project already exists.");
                 return;
             }
-
+            
+            // User selects a template for the project
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("Select a template:\n1. basic\n2. standard\n3. advanced\n4. custom (Modify)");
             Console.ResetColor();
@@ -198,12 +203,14 @@ namespace GreenTechFolderAutomation
 
             if (templateChoice == 4)
             {
+                // Modify custom template if selected
                 ModifyCustomTemplate();
                 selectedTemplate = templates["custom"];
                 templateName = "custom";
             }
             else
             {
+                // Map the user's template choice to one of the predefined templates
                 templateName = templateChoice switch
                 {
                     1 => "basic",
@@ -214,22 +221,23 @@ namespace GreenTechFolderAutomation
 
                 selectedTemplate = templates[templateName];
             }
-
+            // Create project folders based on the selected template
             CreateFolders(projectPath, selectedTemplate);
             projectTemplateMapping[projectPath] = templateName;
 
         }
 
-
+        // Allows the user to modify the custom template by adding folders
         static void ModifyCustomTemplate()
         {
             Console.WriteLine("Modifying Custom Template:");
-            templates["custom"].Clear();
+            templates["custom"].Clear(); // Reset the custom template
 
             Console.WriteLine("Enter folder names for Custom Template (type 'done' when finished):");
-            CustomizeTemplate("custom");
+            CustomizeTemplate("custom");// Populate custom template with new folder names
         }
-
+        
+        // Adds folders to a template based on user input
         static void CustomizeTemplate(string template)
         {
             Func<string> folderName = GetValidatedStringInput;
@@ -240,16 +248,18 @@ namespace GreenTechFolderAutomation
                 {
                     break;
                 }
-                templates[template].Add(name);
+                templates[template].Add(name);// Add folder to template
                 Console.WriteLine($"Added '{name}' to template '{template}'.");
             }
         }
 
-        static void CreateFolders(string projectPath, List<string> template)
+        // Creates directories for he project based on the selected template
+        static void CreateFolders(string projectPath, List<string> templates)
         {
-            Directory.CreateDirectory(projectPath);
+            Directory.CreateDirectory(projectPath); // Create project root folder
 
-            foreach (string folder in template)
+            // Create each subfolder as defined in the selected template
+            foreach (string folder in templates)
             {
                 string folderPath = Path.Combine(projectPath, folder);
                 Directory.CreateDirectory(folderPath);
@@ -259,13 +269,15 @@ namespace GreenTechFolderAutomation
             Console.WriteLine("Project folders created successfully.");
             Console.ResetColor();
         }
-
+        
+        // Allows the user to update any template, including custom templates
         static void UpdateTemplates()
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("Select the template to update:\n1. basic\n2. standard\n3. advanced\n4. custom");
             Console.ResetColor();
 
+            // Template selection for updating
             string templateName = GetValidatedInput(4) switch
             {
                 1 => "basic",
@@ -274,7 +286,7 @@ namespace GreenTechFolderAutomation
                 4 => "custom",
                 _ => "basic"
             };
-
+            // Modify the selected template
             if (templateName == "custom")
             {
                 ModifyCustomTemplate();
@@ -282,21 +294,24 @@ namespace GreenTechFolderAutomation
             else
             {
                 Console.WriteLine($"Modifying {templateName} Template:");
-                templates[templateName].Clear();
+                templates[templateName].Clear();// Reset the selected template
 
                 Console.WriteLine($"Enter folder names for {templateName} Template (type 'done' when finished):");
-                CustomizeTemplate(templateName);
+                CustomizeTemplate(templateName); // Populate wth new folder names
             }
 
+            // Update all projects using the modified template
             DynamicTemplateUpdate(templateName);
         }
 
+        // Dynamically updates all projects using a specific template
         static void DynamicTemplateUpdate(string templateName)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine($"Updating all projects using the {templateName} template...");
             Console.ResetColor();
 
+            // Loop through all projects using the updated template
             foreach (var project in projectTemplateMapping.Where(p => p.Value == templateName))
             {
                 string projectPath = project.Key;
@@ -310,7 +325,7 @@ namespace GreenTechFolderAutomation
                 {
                     string folderName = Path.GetFileName(folder);
 
-                    // If the folder doesn't exist in the new template
+                    // If the folder doesn't exist in the new template, prompt the user to delete it
                     if (!templateFolders.Contains(folderName))
                     {
                         if (Directory.GetFiles(folder).Length > 0 || Directory.GetDirectories(folder).Length > 0)
@@ -319,7 +334,7 @@ namespace GreenTechFolderAutomation
                             Console.WriteLine($"Folder '{folderName}' is not empty. Do you want to delete it? (yes/no)");
                             if (userResponse().ToLower() == "yes")
                             {
-                                Directory.Delete(folder, true);
+                                Directory.Delete(folder, true); // Recursively delete folder and its contents
                                 Console.WriteLine($"Deleted folder: {folderName}");
                             }
                             else
@@ -329,7 +344,7 @@ namespace GreenTechFolderAutomation
                         }
                         else
                         {
-                            Directory.Delete(folder, true);
+                            Directory.Delete(folder, true); // Delete empty folders
                             Console.WriteLine($"Deleted empty folder: {folderName}");
                         }
                     }
@@ -340,8 +355,8 @@ namespace GreenTechFolderAutomation
                 {
                     string folderPath = Path.Combine(projectPath, folder);
                     if (!Directory.Exists(folderPath))
-                    {
-                        Directory.CreateDirectory(folderPath);
+                    { 
+                        Directory.CreateDirectory(folderPath); // Create missing folders
                         Console.WriteLine($"Added folder '{folder}' to project: {projectPath}");
                     }
                 }
